@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { supabase } from "../../../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 
 // Tell Next.js to always fetch fresh data for this page
 export const dynamic = 'force-dynamic';
