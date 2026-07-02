@@ -1,25 +1,18 @@
 import Link from "next/link";
+import { supabase } from "../lib/supabase"; // This imports your secure connection!
 
-export default function AuditCoursePage() {
-  // Placeholder data: We will replace this with real Supabase data later!
-  const chapters = [
-    {
-      id: 1,
-      title: "Professional Ethics",
-      topics: [
-        { id: 101, title: "Second Schedule, Part I: Professional Misconduct Clauses", duration: "45 mins" },
-        { id: 102, title: "First Schedule: General Guidelines", duration: "30 mins" }
-      ]
-    },
-    {
-      id: 2,
-      title: "Audit of Consolidated Financial Statements",
-      topics: [
-        { id: 201, title: "Ind AS 36: Impairment of Assets - Audit Procedures", duration: "50 mins" },
-        { id: 202, title: "Ind AS 19 & 105 Overview", duration: "40 mins" }
-      ]
-    }
-  ];
+// The "async" here allows us to fetch data directly on the server
+export default async function AuditCoursePage() {
+  
+  // 1. Fetch all rows from your 'topics' table, ordered by their ID
+  const { data: topics, error } = await supabase
+    .from("topics")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching topics:", error);
+  }
 
   return (
     <main className="min-h-screen bg-zinc-950 p-6 font-sans text-zinc-200">
@@ -34,24 +27,30 @@ export default function AuditCoursePage() {
             CA Final <span className="text-red-600">Audit</span>
           </h1>
           <p className="mt-4 text-lg text-zinc-400">
-            Select a chapter below to access video lectures, PDFs, and MCQs.
+            Select a topic below to access video lectures and PDFs.
           </p>
         </div>
 
         {/* Curriculum Section */}
         <div className="space-y-6">
-          {chapters.map((chapter) => (
-            <div key={chapter.id} className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50">
-              {/* Chapter Header */}
-              <div className="bg-zinc-900 px-6 py-4">
-                <h2 className="text-xl font-bold text-white">
-                  Chapter {chapter.id}: {chapter.title}
-                </h2>
-              </div>
+          <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50">
+            <div className="bg-zinc-900 px-6 py-4">
+              <h2 className="text-xl font-bold text-white">
+                All Topics
+              </h2>
+            </div>
+            
+            {/* Live Topics List from Database */}
+            <div className="flex flex-col divide-y divide-zinc-800">
               
-              {/* Topics List */}
-              <div className="flex flex-col divide-y divide-zinc-800">
-                {chapter.topics.map((topic, index) => (
+              {/* If no topics exist, show a message */}
+              {!topics || topics.length === 0 ? (
+                <div className="p-6 text-zinc-400">
+                  No topics added yet. Add a row in Supabase!
+                </div>
+              ) : (
+                /* Loop through the live topics and create a button for each */
+                topics.map((topic, index) => (
                   <Link 
                     key={topic.id} 
                     href={`/audit/topic/${topic.id}`}
@@ -64,16 +63,16 @@ export default function AuditCoursePage() {
                       <span className="font-medium text-zinc-300">{topic.title}</span>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span className="text-sm text-zinc-500">{topic.duration}</span>
                       <span className="rounded-full bg-red-600/10 px-3 py-1 text-xs font-bold text-red-500">
                         Start
                       </span>
                     </div>
                   </Link>
-                ))}
-              </div>
+                ))
+              )}
+
             </div>
-          ))}
+          </div>
         </div>
 
       </div>
