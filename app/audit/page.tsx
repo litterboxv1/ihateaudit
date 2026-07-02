@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { supabase } from "../lib/supabase"; // This imports your secure connection!
+export const dynamic = 'force-dynamic';
+
 
 // The "async" here allows us to fetch data directly on the server
 export default async function AuditCoursePage() {
