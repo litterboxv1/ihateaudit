@@ -13,7 +13,7 @@ const Plyr = dynamic(
       </div>
     )
   }
-);
+) as any; // <-- This instantly forces TypeScript to stop checking this component
 
 export default function VideoPlayer({ youtubeId }: { youtubeId: string }) {
   const plyrOptions = {
@@ -33,12 +33,11 @@ export default function VideoPlayer({ youtubeId }: { youtubeId: string }) {
     <div className="mb-4 overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-2xl">
       <style>{`
         .plyr {
-          --plyr-color-main: #dc2626; /* Matches your red-600 theme */
+          --plyr-color-main: #dc2626;
           --plyr-video-background: #000;
         }
       `}</style>
       
-      {/* @ts-ignore - Bypassing strict prop check on dynamic import */}
       <Plyr
         source={{
           type: "video",
