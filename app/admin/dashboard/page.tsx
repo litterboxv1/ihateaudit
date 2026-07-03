@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
-import { logoutAdmin } from "../actions/auth";
+import { logoutAdmin } from "../../actions/auth";
 
 export default function AdminDashboard() {
   const router = useRouter();
