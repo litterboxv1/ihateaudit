@@ -3,39 +3,30 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+import { logoutAdmin } from "../actions/auth";
 
 export default function AdminDashboard() {
   const router = useRouter();
   
-  // State for our database rows
   const [topics, setTopics] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // State for the "Add New" form
   const [title, setTitle] = useState("");
   const [sectionName, setSectionName] = useState("");
   const [youtubeId, setYoutubeId] = useState("");
   const [pdfLink, setPdfLink] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 1. Check Auth and Fetch Data on Load
+  // 1. Fetch Data on Load (We removed the old, broken auth check here!)
   useEffect(() => {
-    const checkAuth = () => {
-      // Check if our secure cookie exists
-      if (!document.cookie.includes("admin_auth=true")) {
-        router.push("/admin");
-      }
-    };
-    
     const fetchTopics = async () => {
       const { data } = await supabase.from("topics").select("*").order("id", { ascending: false });
       if (data) setTopics(data);
       setIsLoading(false);
     };
 
-    checkAuth();
     fetchTopics();
-  }, [router]);
+  }, []);
 
   // 2. Handle Adding New Content
   const handleAddTopic = async (e: React.FormEvent) => {
@@ -45,7 +36,6 @@ export default function AdminDashboard() {
     const newTopic = {
       title,
       section_name: sectionName,
-      // If left blank, save as null so our app knows it's a PDF-only resource
       youtube_id: youtubeId.trim() === "" ? null : youtubeId.trim(),
       pdf_link: pdfLink.trim() === "" ? null : pdfLink.trim(),
     };
@@ -53,10 +43,7 @@ export default function AdminDashboard() {
     const { data, error } = await supabase.from("topics").insert([newTopic]).select();
 
     if (!error && data) {
-      // Instantly add it to the top of the screen without reloading
       setTopics([data[0], ...topics]);
-      
-      // Clear the form
       setTitle("");
       setSectionName("");
       setYoutubeId("");
@@ -73,25 +60,22 @@ export default function AdminDashboard() {
     if (!window.confirm("Are you sure you want to delete this module? This cannot be undone.")) return;
 
     const { error } = await supabase.from("topics").delete().eq("id", id);
-    
     if (!error) {
-      // Instantly remove it from the screen
       setTopics(topics.filter((t) => t.id !== id));
     }
   };
 
-  // 4. Secure Logout
-  const handleLogout = () => {
-    document.cookie = "admin_auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  // 4. Secure Logout (Updated to use our Server Action)
+  const handleLogout = async () => {
+    await logoutAdmin();
     router.push("/admin");
   };
 
-  if (isLoading) return <div className="p-10 text-white">Loading Vault Data...</div>;
+  if (isLoading) return <div className="flex min-h-screen items-center justify-center bg-zinc-950 text-white">Loading Vault Data...</div>;
 
   return (
     <div className="min-h-screen bg-zinc-950 p-6 md:p-10">
       
-      {/* Dashboard Header */}
       <div className="mb-10 flex items-center justify-between border-b border-zinc-800 pb-6">
         <div>
           <h1 className="text-3xl font-black text-white">Admin <span className="text-red-600">Control Room</span></h1>
@@ -104,7 +88,6 @@ export default function AdminDashboard() {
 
       <div className="grid gap-10 lg:grid-cols-3">
         
-        {/* ADD NEW CONTENT FORM */}
         <div className="lg:col-span-1">
           <div className="sticky top-6 rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-xl">
             <h2 className="mb-6 text-xl font-bold text-white">Add New Resource</h2>
@@ -138,7 +121,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* CURRENT CURRICULUM LIST */}
         <div className="lg:col-span-2">
           <h2 className="mb-6 text-xl font-bold text-white">Live Database</h2>
           
