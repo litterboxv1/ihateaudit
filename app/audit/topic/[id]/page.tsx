@@ -6,14 +6,12 @@ export const dynamic = 'force-dynamic';
 export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  // 1. Fetch the specific topic being watched
   const { data: topic, error } = await supabase
     .from("topics")
     .select("*")
     .eq("id", id)
     .single();
 
-  // 2. Fetch ALL topics to calculate Next/Prev and build the sub-topic list
   const { data: allTopics } = await supabase
     .from("topics")
     .select("*")
@@ -30,15 +28,10 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
     );
   }
 
-  // 3. Calculate Navigation Logic
-  // Find where we currently are in the massive list
   const currentIndex = allTopics.findIndex((t) => t.id.toString() === id);
-  
-  // Grab the adjacent rows (if they exist)
   const prevTopic = currentIndex > 0 ? allTopics[currentIndex - 1] : null;
   const nextTopic = currentIndex < allTopics.length - 1 ? allTopics[currentIndex + 1] : null;
 
-  // 4. Filter only the topics that share this exact section name
   const sectionTopics = allTopics.filter((t) => t.section_name === topic.section_name);
 
   return (
@@ -46,13 +39,13 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
       
       <div className="mx-auto max-w-5xl">
         
-        {/* Video Player Box */}
+        {/* Video Player Box with Clean URL Parameters */}
         <div className="mb-4 overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-2xl">
           <div className="relative aspect-video w-full">
             <iframe
               className="absolute left-0 top-0 h-full w-full"
-              src={`https://www.youtube.com/embed/${topic.youtube_id}?rel=0`}
-              title="YouTube video player"
+              src={`https://www.youtube.com/embed/${topic.youtube_id}?rel=0&modestbranding=1&iv_load_policy=3&color=white`}
+              title="Course Video Player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -60,7 +53,7 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
 
-        {/* Video Navigation Bar (Next / Prev) */}
+        {/* Video Navigation Bar */}
         <div className="mb-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-4">
           {prevTopic ? (
             <Link 
@@ -122,7 +115,7 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
 
-        {/* Section Sub-Topics (More in this module) */}
+        {/* Section Sub-Topics */}
         <div className="mt-16">
           <h3 className="mb-6 text-xl font-bold text-white">
             More in <span className="text-red-500">{topic.section_name}</span>
