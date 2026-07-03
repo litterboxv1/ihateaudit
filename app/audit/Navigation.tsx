@@ -11,7 +11,7 @@ export default function Navigation({ topics, sections }: { topics: any[], sectio
 
   return (
     <>
-      {/* DESKTOP SIDEBAR (Glued to the left edge) */}
+      {/* DESKTOP SIDEBAR */}
       <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r border-zinc-800 bg-zinc-900 md:flex">
         <div className="flex-1 overflow-y-auto p-6">
           <Link href="/" className="mb-8 block text-2xl font-black text-white">
@@ -20,13 +20,22 @@ export default function Navigation({ topics, sections }: { topics: any[], sectio
           <nav className="flex flex-col gap-4">
             <Link href="/audit" className="font-semibold text-zinc-400 transition-colors hover:text-white">🏠 Curriculum</Link>
             <Link href="/audit/resources" className="font-semibold text-zinc-400 transition-colors hover:text-white">📄 PDF Vault</Link>
+            
             <div className="mt-8 flex flex-col gap-3">
               <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Course Sections</span>
-              {sections.map((section) => (
-                <Link key={String(section)} href={`/audit#${String(section).replace(/\s+/g, '-')}`} className="text-sm font-medium text-zinc-400 transition-colors hover:text-white">
-                  {String(section)}
-                </Link>
-              ))}
+              
+              {sections.map((section) => {
+                // Find the very first topic that belongs to this specific section
+                const firstTopic = topics.find((t: any) => t.section_name === section);
+                const targetUrl = firstTopic ? `/audit/topic/${firstTopic.id}` : "/audit";
+                
+                return (
+                  <Link key={String(section)} href={targetUrl} className="text-sm font-medium text-zinc-400 transition-colors hover:text-white">
+                    {String(section)}
+                  </Link>
+                );
+              })}
+              
             </div>
           </nav>
         </div>
@@ -40,7 +49,7 @@ export default function Navigation({ topics, sections }: { topics: any[], sectio
         )}
       </aside>
 
-      {/* MOBILE MENU (Glued to the bottom edge) */}
+      {/* MOBILE MENU */}
       <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-800 bg-zinc-900 md:hidden">
         <details className="group relative">
           <summary className="flex cursor-pointer items-center justify-between p-4 outline-none">
@@ -60,11 +69,19 @@ export default function Navigation({ topics, sections }: { topics: any[], sectio
             <Link href="/audit/resources" className="text-zinc-400 hover:text-white">📄 PDF Vault</Link>
             <hr className="my-2 border-zinc-800" />
             <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Sections</span>
-            {sections.map((section) => (
-              <Link key={String(section)} href={`/audit#${String(section).replace(/\s+/g, '-')}`} className="text-sm text-zinc-300 hover:text-white">
-                {String(section)}
-              </Link>
-            ))}
+            
+            {sections.map((section) => {
+              // Same logic for the mobile menu links
+              const firstTopic = topics.find((t: any) => t.section_name === section);
+              const targetUrl = firstTopic ? `/audit/topic/${firstTopic.id}` : "/audit";
+              
+              return (
+                <Link key={String(section)} href={targetUrl} className="text-sm text-zinc-300 hover:text-white">
+                  {String(section)}
+                </Link>
+              );
+            })}
+            
           </nav>
         </details>
       </div>
