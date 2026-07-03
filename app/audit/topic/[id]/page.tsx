@@ -1,4 +1,5 @@
 import VideoPlayer from "./VideoPlayer";
+import McqQuiz from "./McqQuiz";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 
@@ -17,6 +18,13 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
     .from("topics")
     .select("*")
     .order("id", { ascending: true });
+  
+  const { data: mcqs } = await supabase
+  .from("mcqs")
+  .select("*")
+  .eq("topic_id", id)
+  .order("id", { ascending: true });
+
 
   if (error || !topic || !allTopics) {
     return (
@@ -89,7 +97,7 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
             </p>
           </div>
 
-          <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3">
             {topic.pdf_link ? (
               <a 
                 href={topic.pdf_link} 
@@ -104,6 +112,10 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
                 📄 No Notes Available
               </div>
             )}
+
+            {/* NEW MCQ COMPONENT HERE */}
+            <McqQuiz mcqs={mcqs || []} />
+          </div>
           </div>
         </div>
 
