@@ -1,10 +1,23 @@
 "use client";
 
-import "plyr/dist/plyr.css";
-import Plyr from "plyr-react";
+import dynamic from "next/dynamic";
+import "plyr-react/plyr.css";
+
+// 1. We dynamically import the package to completely disable Server-Side Rendering (SSR).
+// 2. We use .then() to manually catch the export and bypass Turbopack's strict check.
+const Plyr = dynamic(
+  () => import("plyr-react").then((mod: any) => mod.Plyr || mod.default),
+  { 
+    ssr: false, 
+    loading: () => (
+      <div className="flex aspect-video w-full items-center justify-center bg-black font-bold text-zinc-500">
+        Loading Player...
+      </div>
+    )
+  }
+);
 
 export default function VideoPlayer({ youtubeId }: { youtubeId: string }) {
-  // Plyr configuration to make it look incredibly clean
   const plyrOptions = {
     controls: [
       'play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'
@@ -20,10 +33,9 @@ export default function VideoPlayer({ youtubeId }: { youtubeId: string }) {
 
   return (
     <div className="mb-4 overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-2xl">
-      {/* This CSS forces the player to maintain a perfect 16:9 ratio and customizes the brand color */}
       <style>{`
         .plyr {
-          --plyr-color-main: #dc2626; /* Matches your red-600 theme */
+          --plyr-color-main: #dc2626; /* CA Audit Red */
           --plyr-video-background: #000;
         }
       `}</style>
