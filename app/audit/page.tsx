@@ -28,7 +28,7 @@ export default async function AuditCoursePage() {
       <div className="space-y-10">
         {!groupedTopics || Object.keys(groupedTopics).length === 0 ? (
           <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 text-zinc-400">
-            No topics found. Add some rows in your Supabase dashboard!
+            No topics found.
           </div>
         ) : (
           /* TS FIX: Forcefully cast Object.entries as a specific array type */

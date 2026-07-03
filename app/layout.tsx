@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "IHateAudit",
-  description: "The ultimate free LMS for CA Final Audit",
+  description: "Because Audit hates you too!",
 };
 
 export default function RootLayout({

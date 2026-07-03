@@ -12,8 +12,7 @@ export default function Home() {
         
         {/* Subtitle */}
         <p className="mx-auto mb-10 max-w-2xl text-lg font-medium text-zinc-400 sm:text-xl">
-          The ultimate no-nonsense, 100% free LMS for CA Final Audit. 
-          Structured perfectly, built for students who just want to pass without the fluff.
+          Because Audit hates you too!
         </p>
         
         {/* Buttons */}
@@ -24,12 +23,6 @@ export default function Home() {
           >
             Get Started
           </Link>
-          <a 
-            href="#features" 
-            className="flex items-center justify-center rounded-full bg-zinc-800 px-8 py-4 text-lg font-semibold text-zinc-200 transition-colors hover:bg-zinc-700 active:scale-95"
-          >
-            See Curriculum
-          </a>
         </div>
 
       </div>

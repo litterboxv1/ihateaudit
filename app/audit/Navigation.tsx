@@ -18,8 +18,8 @@ export default function Navigation({ topics, sections }: { topics: any[], sectio
             CA <span className="text-red-600">Audit</span>
           </Link>
           <nav className="flex flex-col gap-4">
-            <Link href="/audit" className="font-semibold text-zinc-400 transition-colors hover:text-white">🏠 Curriculum</Link>
-            <Link href="/audit/resources" className="font-semibold text-zinc-400 transition-colors hover:text-white">📄 PDF Vault</Link>
+            <Link href="/audit" className="font-semibold text-zinc-400 transition-colors hover:text-white">Curriculum</Link>
+            <Link href="/audit/resources" className="font-semibold text-zinc-400 transition-colors hover:text-white">All Notes</Link>
             
             <div className="mt-8 flex flex-col gap-3">
               <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Course Sections</span>
@@ -54,7 +54,7 @@ export default function Navigation({ topics, sections }: { topics: any[], sectio
         <details className="group relative">
           <summary className="flex cursor-pointer items-center justify-between p-4 outline-none">
             <div className="flex flex-col">
-              <span className="font-bold text-white">📚 Course Menu</span>
+              <span className="font-bold text-white">Course Menu</span>
               {currentTopic && (
                 <span className="mt-1 max-w-[250px] truncate text-xs font-medium text-red-400">
                   Playing: {currentTopic.title}
@@ -65,8 +65,8 @@ export default function Navigation({ topics, sections }: { topics: any[], sectio
           </summary>
           
           <nav className="absolute bottom-full left-0 flex max-h-[60vh] w-full flex-col gap-2 overflow-y-auto border-t border-zinc-800 bg-zinc-900 p-4 shadow-[0_-20px_40px_rgba(0,0,0,0.5)]">
-            <Link href="/audit" className="text-zinc-400 hover:text-white">🏠 Home / Curriculum</Link>
-            <Link href="/audit/resources" className="text-zinc-400 hover:text-white">📄 PDF Vault</Link>
+            <Link href="/audit" className="text-zinc-400 hover:text-white">Table of Contents</Link>
+            <Link href="/audit/resources" className="text-zinc-400 hover:text-white">Notes</Link>
             <hr className="my-2 border-zinc-800" />
             <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Sections</span>
             
