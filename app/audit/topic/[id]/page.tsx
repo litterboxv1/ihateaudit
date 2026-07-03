@@ -1,30 +1,32 @@
-import VideoPlayer from "./VideoPlayer";
-import McqQuiz from "./McqQuiz";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
+import VideoPlayer from "./VideoPlayer";
+import McqQuiz from "./McqQuiz";
 
 export const dynamic = 'force-dynamic';
 
 export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
+  // 1. Fetch the details for the current lecture
   const { data: topic, error } = await supabase
     .from("topics")
     .select("*")
     .eq("id", id)
     .single();
 
+  // 2. Fetch all lectures to build navigation and sidebar lists
   const { data: allTopics } = await supabase
     .from("topics")
     .select("*")
     .order("id", { ascending: true });
-  
-  const { data: mcqs } = await supabase
-  .from("mcqs")
-  .select("*")
-  .eq("topic_id", id)
-  .order("id", { ascending: true });
 
+  // 3. Fetch the MCQ quiz questions for this specific lecture
+  const { data: mcqs } = await supabase
+    .from("mcqs")
+    .select("*")
+    .eq("topic_id", id)
+    .order("id", { ascending: true });
 
   if (error || !topic || !allTopics) {
     return (
@@ -45,13 +47,10 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
 
   return (
     <div className="p-4 md:p-8 lg:p-10">
-      
       <div className="mx-auto max-w-5xl">
         
-        {/* Video Player Box with Clean URL Parameters */}
-                {/* NEW Custom Video Player Skin */}
+        {/* Custom Unbranded Video Player Skin */}
         <VideoPlayer youtubeId={topic.youtube_id} />
-
 
         {/* Video Navigation Bar */}
         <div className="mb-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-4">
@@ -86,7 +85,7 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
           )}
         </div>
 
-        {/* Info & Notes Section */}
+        {/* Info, Study Notes & Interactive MCQ Panel */}
         <div className="mb-12 grid gap-8 md:grid-cols-3">
           <div className="md:col-span-2">
             <h1 className="mb-2 text-3xl font-bold text-white">
@@ -97,7 +96,7 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
             </p>
           </div>
 
-                    <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3">
             {topic.pdf_link ? (
               <a 
                 href={topic.pdf_link} 
@@ -113,13 +112,12 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
               </div>
             )}
 
-            {/* NEW MCQ COMPONENT HERE */}
+            {/* MCQ Quiz Launcher */}
             <McqQuiz mcqs={mcqs || []} />
-          </div>
           </div>
         </div>
 
-        {/* Section Sub-Topics */}
+        {/* More Lectures in the Current Section */}
         <div className="mt-16">
           <h3 className="mb-6 text-xl font-bold text-white">
             More in <span className="text-red-500">{topic.section_name}</span>
