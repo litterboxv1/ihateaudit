@@ -13,13 +13,15 @@ const Plyr = dynamic(
       </div>
     )
   }
-) as any; // <-- This instantly forces TypeScript to stop checking this component
+) as any;
 
 export default function VideoPlayer({ youtubeId }: { youtubeId: string }) {
-  const plyrOptions = {
+    const plyrOptions = {
     controls: [
-      'play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'
+      'play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'
     ],
+    settings: ['speed'], 
+    speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] },
     youtube: {
       noCookie: true,
       rel: 0,
@@ -28,6 +30,7 @@ export default function VideoPlayer({ youtubeId }: { youtubeId: string }) {
       modestbranding: 1
     }
   };
+
 
   return (
     <div className="mb-4 overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-2xl">
