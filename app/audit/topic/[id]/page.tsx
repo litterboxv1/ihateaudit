@@ -1,3 +1,4 @@
+import VideoPlayer from "./VideoPlayer";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 
@@ -40,18 +41,9 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
       <div className="mx-auto max-w-5xl">
         
         {/* Video Player Box with Clean URL Parameters */}
-        <div className="mb-4 overflow-hidden rounded-2xl border border-zinc-800 bg-black shadow-2xl">
-          <div className="relative aspect-video w-full">
-            <iframe
-              className="absolute left-0 top-0 h-full w-full"
-              src={`https://www.youtube.com/embed/${topic.youtube_id}?rel=0&modestbranding=1&iv_load_policy=3&color=white`}
-              title="Course Video Player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          </div>
-        </div>
+                {/* NEW Custom Video Player Skin */}
+        <VideoPlayer youtubeId={topic.youtube_id} />
+
 
         {/* Video Navigation Bar */}
         <div className="mb-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-4">
