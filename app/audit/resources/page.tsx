@@ -33,11 +33,12 @@ export default async function ResourcesPage() {
             No PDF resources found. Add some links to your database!
           </div>
         ) : (
-          Object.entries(groupedPdfs).map(([sectionName, sectionTopics]: [string, any[]]) => (
+          /* TS FIX: Forcefully cast Object.entries as a specific array type */
+          (Object.entries(groupedPdfs) as [string, any[]][]).map(([sectionName, sectionTopics]) => (
             <div key={sectionName}>
               <h2 className="mb-6 border-l-4 border-red-600 pl-4 text-2xl font-bold text-white">{sectionName}</h2>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {sectionTopics.map((topic: any) => (
+                {sectionTopics.map((topic) => (
                   <div key={topic.id} className="flex flex-col justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-5 transition-colors hover:border-zinc-700">
                     <div>
                       <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-zinc-500">

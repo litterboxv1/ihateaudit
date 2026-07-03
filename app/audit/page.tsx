@@ -9,7 +9,6 @@ export default async function AuditCoursePage() {
     .select("*")
     .order("id", { ascending: true });
 
-  // TS Fix: Force the record to be any[]
   const groupedTopics = topics?.reduce((acc, topic) => {
     const section = topic.section_name || "Uncategorized";
     if (!acc[section]) acc[section] = [];
@@ -32,14 +31,13 @@ export default async function AuditCoursePage() {
             No topics found. Add some rows in your Supabase dashboard!
           </div>
         ) : (
-          // TS Fix: Explicitly define [string, any[]]
-          Object.entries(groupedTopics).map(([sectionName, sectionTopics]: [string, any[]]) => (
+          /* TS FIX: Forcefully cast Object.entries as a specific array type */
+          (Object.entries(groupedTopics) as [string, any[]][]).map(([sectionName, sectionTopics]) => (
             <div key={sectionName} id={sectionName.replace(/\s+/g, '-')} className="scroll-mt-8">
               <h2 className="mb-4 text-2xl font-bold text-white">{sectionName}</h2>
               <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50">
                 <div className="flex flex-col divide-y divide-zinc-800">
-                  {/* TS Fix: Explicitly define topic as any */}
-                  {sectionTopics.map((topic: any, index: number) => (
+                  {sectionTopics.map((topic, index) => (
                     <Link key={topic.id} href={`/audit/topic/${topic.id}`} className="group flex items-center justify-between px-6 py-4 transition-colors hover:bg-zinc-800/80">
                       <div className="flex items-center gap-4">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-zinc-800 text-sm font-bold text-zinc-400 transition-colors group-hover:bg-zinc-700 group-hover:text-white">
