@@ -1,10 +1,10 @@
-import { supabase } from "../../lib/supabase";
+import { supabase } from "./lib/supabase";
 import Navigation from "./Navigation";
 import Topbar from "./Topbar";
 
 export const dynamic = 'force-dynamic';
 
-export default async function AuditLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -17,20 +17,14 @@ export default async function AuditLayout({
   const sections = Array.from(new Set(topics?.map(t => t.section_name).filter(Boolean)));
 
   return (
-    // pb-[76px] ensures content isn't hidden under the mobile bottom bar.
-    // md:pl-64 ensures content isn't hidden under the desktop left sidebar.
-    // md:pb-0 removes the bottom padding on desktop where it isn't needed.
-    <div className="min-h-screen bg-zinc-950 pb-[76px] md:pb-0 md:pl-64">
-      
-      <Navigation topics={topics || []} sections={sections as string[]} />
-
-      {/* NEW: Injected Topbar for Auth */}
-      <Topbar />
-
-      <main>
-        {children}
-      </main>
-      
-    </div>
+    <html lang="en">
+      <body className="min-h-screen bg-zinc-950 pb-[76px] md:pb-0 md:pl-64 text-white">
+        <Navigation topics={topics || []} sections={sections as string[]} />
+        <Topbar />
+        <main>
+          {children}
+        </main>
+      </body>
+    </html>
   );
 }

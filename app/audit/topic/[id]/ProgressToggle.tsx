@@ -14,7 +14,6 @@ export default function ProgressToggle({ topicId }: { topicId: string }) {
       
       if (session?.user) {
         setUser(session.user);
-        // Cloud Check
         const { data } = await supabase
           .from("user_progress")
           .select("*")
@@ -24,7 +23,6 @@ export default function ProgressToggle({ topicId }: { topicId: string }) {
         
         if (data) setIsCompleted(true);
       } else {
-        // Local Memory Check
         const savedProgress = JSON.parse(localStorage.getItem("ca_audit_progress") || "[]");
         if (savedProgress.includes(topicId)) setIsCompleted(true);
       }
@@ -35,17 +33,15 @@ export default function ProgressToggle({ topicId }: { topicId: string }) {
 
   const toggleProgress = async () => {
     const newState = !isCompleted;
-    setIsCompleted(newState); // Optimistic UI update so it feels instantly fast
+    setIsCompleted(newState);
 
     if (user) {
-      // Save to Supabase Cloud
       if (newState) {
         await supabase.from("user_progress").insert([{ user_id: user.id, topic_id: topicId }]);
       } else {
         await supabase.from("user_progress").delete().eq("user_id", user.id).eq("topic_id", topicId);
       }
     } else {
-      // Save to Local iPad Memory
       let savedProgress = JSON.parse(localStorage.getItem("ca_audit_progress") || "[]");
       if (newState) {
         savedProgress.push(topicId);

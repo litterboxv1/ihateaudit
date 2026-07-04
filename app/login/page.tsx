@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../lib/supabase"; // Adjust this if your lib folder is elsewhere
+import { supabase } from "../lib/supabase";
 
 export default function StudentLogin() {
   const [email, setEmail] = useState("");

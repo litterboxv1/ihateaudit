@@ -28,16 +28,12 @@ export default function Topbar() {
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-zinc-800 bg-zinc-950/80 px-4 backdrop-blur-md md:px-8">
-      
-      {/* Mobile Title (Hidden on desktop since your sidebar likely has it) */}
       <Link href="/audit" className="text-xl font-black tracking-tight text-white md:hidden">
         CA <span className="text-red-500">Vault</span>
       </Link>
       
-      {/* Desktop Spacer */}
       <div className="hidden md:block"></div>
 
-      {/* Auth Controls */}
       <div className="flex items-center gap-4">
         {user ? (
           <>
