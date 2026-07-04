@@ -1,28 +1,25 @@
-import ProgressToggle from "./ProgressToggle";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 import VideoPlayer from "./VideoPlayer";
 import McqQuiz from "./McqQuiz";
+import ProgressToggle from "./ProgressToggle";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  // 1. Fetch the details for the current lecture
   const { data: topic, error } = await supabase
     .from("topics")
     .select("*")
     .eq("id", id)
     .single();
 
-  // 2. Fetch all lectures to build navigation and sidebar lists
   const { data: allTopics } = await supabase
     .from("topics")
     .select("*")
     .order("id", { ascending: true });
 
-  // 3. Fetch the MCQ quiz questions for this specific lecture
   const { data: mcqs } = await supabase
     .from("mcqs")
     .select("*")
@@ -34,7 +31,7 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
       <div className="flex min-h-[50vh] flex-col items-center justify-center p-6 text-center">
         <h1 className="mb-4 text-3xl font-bold text-white">Topic Not Found</h1>
         <Link href="/audit" className="rounded-xl bg-zinc-800 px-6 py-3 font-bold text-white hover:bg-zinc-700">
-          ← Back to Curriculum
+          &larr; Back to Curriculum
         </Link>
       </div>
     );
@@ -50,22 +47,20 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
     <div className="p-4 md:p-8 lg:p-10">
       <div className="mx-auto max-w-5xl">
         
-        {/* Custom Unbranded Video Player Skin */}
         <VideoPlayer youtubeId={topic.youtube_id} />
 
-        {/* Video Navigation Bar */}
         <div className="mb-10 flex items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900 p-4">
           {prevTopic ? (
-            <Link 
+            <Link
               href={`/audit/topic/${prevTopic.id}`}
               className="flex items-center gap-2 font-bold text-zinc-400 transition-colors hover:text-white"
             >
-              <span>←</span>
+              <span>&larr;</span>
               <span className="hidden sm:inline">Previous Lecture</span>
               <span className="sm:hidden">Prev</span>
             </Link>
           ) : (
-            <div className="font-bold text-zinc-700">← First Lecture</div>
+            <div className="font-bold text-zinc-700">&larr; First Lecture</div>
           )}
 
           <div className="hidden text-sm font-medium text-zinc-500 md:block">
@@ -73,55 +68,52 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
           </div>
 
           {nextTopic ? (
-            <Link 
+            <Link
               href={`/audit/topic/${nextTopic.id}`}
               className="flex items-center gap-2 rounded-lg bg-red-600/10 px-4 py-2 font-bold text-red-500 transition-colors hover:bg-red-600 hover:text-white"
             >
               <span className="hidden sm:inline">Next Lecture</span>
               <span className="sm:hidden">Next</span>
-              <span>→</span>
+              <span>&rarr;</span>
             </Link>
           ) : (
-            <div className="font-bold text-zinc-700">Course Complete 🎉</div>
+            <div className="font-bold text-zinc-700">Course Complete</div>
           )}
         </div>
 
-        {/* Info, Study Notes & Interactive MCQ Panel */}
+        <div className="mb-12 grid gap-8 md:grid-cols-3">
           <div className="md:col-span-2">
             <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <h1 className="text-3xl font-bold text-white">
                 {topic.title}
               </h1>
-              {/* NEW PROGRESS TRACKER BUTTON */}
               <ProgressToggle topicId={id} />
             </div>
             <p className="text-zinc-400">
-              Module ID: {topic.id} — Ensure you review the attached study materials before moving on.
+              Module ID: {topic.id} &mdash; Ensure you review the attached study materials before moving on.
             </p>
           </div>
 
           <div className="flex flex-col gap-3">
             {topic.pdf_link ? (
-              <a 
-                href={topic.pdf_link} 
-                target="_blank" 
+              <a
+                href={topic.pdf_link}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center rounded-xl bg-zinc-800 p-4 text-center font-bold text-white transition-colors hover:bg-zinc-700 active:scale-95"
               >
-                📄 Download Study Notes
+                Download Study Notes
               </a>
             ) : (
               <div className="flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-center font-bold text-zinc-600">
-                📄 No Notes Available
+                No Notes Available
               </div>
             )}
-
-            {/* MCQ Quiz Launcher */}
+            
             <McqQuiz mcqs={mcqs || []} />
           </div>
         </div>
 
-        {/* More Lectures in the Current Section */}
         <div className="mt-16">
           <h3 className="mb-6 text-xl font-bold text-white">
             More in <span className="text-red-500">{topic.section_name}</span>
@@ -132,8 +124,8 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
               const isCurrentlyWatching = secTopic.id.toString() === id;
               
               return (
-                <Link 
-                  key={secTopic.id} 
+                <Link
+                  key={secTopic.id}
                   href={`/audit/topic/${secTopic.id}`}
                   className={`group flex items-center justify-between px-6 py-4 transition-colors ${
                     isCurrentlyWatching ? "bg-zinc-800/80" : "hover:bg-zinc-800/40"
@@ -141,8 +133,8 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
                 >
                   <div className="flex items-center gap-4">
                     <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors ${
-                      isCurrentlyWatching 
-                        ? "bg-red-600 text-white" 
+                      isCurrentlyWatching
+                        ? "bg-red-600 text-white"
                         : "bg-zinc-800 text-zinc-400 group-hover:bg-zinc-700 group-hover:text-white"
                     }`}>
                       {index + 1}
