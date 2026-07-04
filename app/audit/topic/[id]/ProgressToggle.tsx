@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "../../../../lib/supabase";
+import { supabase } from "../../../lib/supabase";
 
 export default function ProgressToggle({ topicId }: { topicId: string }) {
   const [isCompleted, setIsCompleted] = useState(false);
