@@ -1,3 +1,4 @@
+import ProgressToggle from "./ProgressToggle";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
 import VideoPlayer from "./VideoPlayer";
@@ -86,11 +87,14 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
         </div>
 
         {/* Info, Study Notes & Interactive MCQ Panel */}
-        <div className="mb-12 grid gap-8 md:grid-cols-3">
           <div className="md:col-span-2">
-            <h1 className="mb-2 text-3xl font-bold text-white">
-              {topic.title}
-            </h1>
+            <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <h1 className="text-3xl font-bold text-white">
+                {topic.title}
+              </h1>
+              {/* NEW PROGRESS TRACKER BUTTON */}
+              <ProgressToggle topicId={id} />
+            </div>
             <p className="text-zinc-400">
               Module ID: {topic.id} — Ensure you review the attached study materials before moving on.
             </p>
