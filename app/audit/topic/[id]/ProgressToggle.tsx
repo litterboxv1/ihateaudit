@@ -1,57 +1,38 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "../../../lib/supabase";
 
 export default function ProgressToggle({ topicId }: { topicId: string }) {
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [isLoaded, setIsLoaded] = useState(false); // Prevents server/client hydration crashing
 
+  // On mount, check if this lesson is already in the student's local memory
   useEffect(() => {
-    const checkStatus = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session?.user) {
-        setUser(session.user);
-        const { data } = await supabase
-          .from("user_progress")
-          .select("*")
-          .eq("user_id", session.user.id)
-          .eq("topic_id", topicId)
-          .single();
-        
-        if (data) setIsCompleted(true);
-      } else {
-        const savedProgress = JSON.parse(localStorage.getItem("ca_audit_progress") || "[]");
-        if (savedProgress.includes(topicId)) setIsCompleted(true);
-      }
-      setIsLoaded(true);
-    };
-    checkStatus();
+    const savedProgress = JSON.parse(localStorage.getItem("ca_audit_progress") || "[]");
+    if (savedProgress.includes(topicId)) {
+      setIsCompleted(true);
+    }
+    setIsLoaded(true);
   }, [topicId]);
 
-  const toggleProgress = async () => {
-    const newState = !isCompleted;
-    setIsCompleted(newState);
-
-    if (user) {
-      if (newState) {
-        await supabase.from("user_progress").insert([{ user_id: user.id, topic_id: topicId }]);
-      } else {
-        await supabase.from("user_progress").delete().eq("user_id", user.id).eq("topic_id", topicId);
-      }
+  const toggleProgress = () => {
+    let savedProgress = JSON.parse(localStorage.getItem("ca_audit_progress") || "[]");
+    
+    if (isCompleted) {
+      // Uncheck it: Remove this ID from the array
+      savedProgress = savedProgress.filter((id: string) => id !== topicId);
+      setIsCompleted(false);
     } else {
-      let savedProgress = JSON.parse(localStorage.getItem("ca_audit_progress") || "[]");
-      if (newState) {
-        savedProgress.push(topicId);
-      } else {
-        savedProgress = savedProgress.filter((id: string) => id !== topicId);
-      }
-      localStorage.setItem("ca_audit_progress", JSON.stringify(savedProgress));
+      // Check it: Add this ID to the array
+      savedProgress.push(topicId);
+      setIsCompleted(true);
     }
+    
+    // Save the updated array back to the iPad/Browser memory
+    localStorage.setItem("ca_audit_progress", JSON.stringify(savedProgress));
   };
 
+  // Show a blank skeleton box for a split second while it reads the local memory
   if (!isLoaded) {
     return <div className="h-12 w-full animate-pulse rounded-xl bg-zinc-800 sm:w-48"></div>;
   }
