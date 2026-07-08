@@ -3,88 +3,58 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function Navigation({ topics, sections }: { topics: any[], sections: string[] }) {
+export default function Navigation({ topics = [], sections = [] }: { topics: any[], sections: string[] }) {
   const pathname = usePathname();
-
-  const currentTopicId = pathname?.includes("/audit/topic/") ? pathname.split("/").pop() : null;
-  const currentTopic = currentTopicId ? topics.find((t: any) => t.id.toString() === currentTopicId) : null;
 
   return (
     <>
       {/* DESKTOP SIDEBAR */}
-      <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r border-zinc-800 bg-zinc-900 md:flex">
-        <div className="flex-1 overflow-y-auto p-6">
-          <Link href="/" className="mb-8 block text-2xl font-black text-white">
-            CA <span className="text-red-600">Audit</span>
+      <aside className="fixed bottom-0 left-0 top-0 z-50 hidden w-64 flex-col border-r border-zinc-800 bg-zinc-950 md:flex">
+        <div className="flex h-24 items-center px-6">
+          <Link href="/audit" className="text-2xl font-black tracking-tight text-white">
+            I<span className="text-red-500">Hate</span>Audit
           </Link>
-          <nav className="flex flex-col gap-4">
-            <Link href="/audit" className="font-semibold text-zinc-400 transition-colors hover:text-white">Curriculum</Link>
-            <Link href="/audit/resources" className="font-semibold text-zinc-400 transition-colors hover:text-white">All Notes</Link>
-            
-            <div className="mt-8 flex flex-col gap-3">
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Course Sections</span>
-              
-              {sections.map((section) => {
-                // Find the very first topic that belongs to this specific section
-                const firstTopic = topics.find((t: any) => t.section_name === section);
-                const targetUrl = firstTopic ? `/audit/topic/${firstTopic.id}` : "/audit";
-                
-                return (
-                  <Link key={String(section)} href={targetUrl} className="text-sm font-medium text-zinc-400 transition-colors hover:text-white">
-                    {String(section)}
-                  </Link>
-                );
-              })}
-              
-            </div>
-          </nav>
         </div>
         
-        {/* Desktop "Now Playing" Indicator */}
-        {currentTopic && (
-          <div className="border-t border-zinc-800 bg-zinc-900/50 p-6">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-red-500">Currently Playing</span>
-            <p className="mt-1 text-sm font-medium text-white line-clamp-2">{currentTopic.title}</p>
+        <div className="flex flex-1 flex-col overflow-y-auto px-4 pb-4">
+          <div className="mb-3 text-xs font-bold uppercase tracking-widest text-zinc-500">Menu</div>
+          <Link 
+            href="/audit" 
+            className={`mb-1 flex items-center rounded-xl px-4 py-3 text-sm font-bold transition-all ${
+              pathname === '/audit' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+            }`}
+          >
+            Curriculum
+          </Link>
+          <Link 
+            href="/audit/profile" 
+            className={`mb-8 flex items-center rounded-xl px-4 py-3 text-sm font-bold transition-all ${
+              pathname === '/audit/profile' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+            }`}
+          >
+            My Profile
+          </Link>
+
+          <div className="mb-3 text-xs font-bold uppercase tracking-widest text-zinc-500">Syllabus</div>
+          <div className="space-y-1">
+            {sections.map((section, idx) => (
+              <div key={idx} className="rounded-lg px-4 py-2 text-xs font-medium text-zinc-500">
+                {section}
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </aside>
 
-      {/* MOBILE MENU */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-zinc-800 bg-zinc-900 md:hidden">
-        <details className="group relative">
-          <summary className="flex cursor-pointer items-center justify-between p-4 outline-none">
-            <div className="flex flex-col">
-              <span className="font-bold text-white">Course Menu</span>
-              {currentTopic && (
-                <span className="mt-1 max-w-[250px] truncate text-xs font-medium text-red-400">
-                  Playing: {currentTopic.title}
-                </span>
-              )}
-            </div>
-            <span className="text-white transition duration-300 group-open:rotate-180">▲</span>
-          </summary>
-          
-          <nav className="absolute bottom-full left-0 flex max-h-[60vh] w-full flex-col gap-2 overflow-y-auto border-t border-zinc-800 bg-zinc-900 p-4 shadow-[0_-20px_40px_rgba(0,0,0,0.5)]">
-            <Link href="/audit" className="text-zinc-400 hover:text-white">Table of Contents</Link>
-            <Link href="/audit/resources" className="text-zinc-400 hover:text-white">Notes</Link>
-            <hr className="my-2 border-zinc-800" />
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">Sections</span>
-            
-            {sections.map((section) => {
-              // Same logic for the mobile menu links
-              const firstTopic = topics.find((t: any) => t.section_name === section);
-              const targetUrl = firstTopic ? `/audit/topic/${firstTopic.id}` : "/audit";
-              
-              return (
-                <Link key={String(section)} href={targetUrl} className="text-sm text-zinc-300 hover:text-white">
-                  {String(section)}
-                </Link>
-              );
-            })}
-            
-          </nav>
-        </details>
-      </div>
+      {/* MOBILE BOTTOM NAVIGATION */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-[76px] items-center justify-around border-t border-zinc-800 bg-zinc-950/90 pb-safe pt-2 backdrop-blur-md md:hidden">
+        <Link href="/audit" className={`flex w-full flex-col items-center justify-center pb-2 ${pathname === '/audit' ? 'text-white' : 'text-zinc-500'}`}>
+          <span className="text-xs font-bold uppercase tracking-wider">Vault</span>
+        </Link>
+        <Link href="/audit/profile" className={`flex w-full flex-col items-center justify-center pb-2 ${pathname === '/audit/profile' ? 'text-white' : 'text-zinc-500'}`}>
+          <span className="text-xs font-bold uppercase tracking-wider">Profile</span>
+        </Link>
+      </nav>
     </>
   );
 }
