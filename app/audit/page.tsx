@@ -2,15 +2,22 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
 
 export default function CurriculumPage() {
   const [topics, setTopics] = useState < any[] > ([]);
   const [completedIds, setCompletedIds] = useState < string[] > ([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState < any > (null);
+  const router = useRouter();
   
   useEffect(() => {
     const fetchData = async () => {
+      // 0. Check if user is logged in
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+      
       // 1. Grab all lectures from the database
       const { data } = await supabase.from("topics").select("*").order("id", { ascending: true });
       if (data) setTopics(data);
@@ -22,7 +29,19 @@ export default function CurriculumPage() {
       setIsLoading(false);
     };
     fetchData();
+    
+    // Listen for login/logout events in real-time
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+    
+    return () => subscription.unsubscribe();
   }, []);
+  
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
   
   if (isLoading) {
     return <div className="flex min-h-screen items-center justify-center bg-zinc-950 text-white">Loading Curriculum Engine...</div>;
@@ -44,20 +63,36 @@ export default function CurriculumPage() {
   });
   
   return (
-    <div className="min-h-screen bg-zinc-950 p-6 md:p-10 text-white">
+    <div className="min-h-screen bg-zinc-950 p-6 text-white md:p-10">
       <div className="mx-auto max-w-4xl">
         
         {/* HEADER SECTION */}
         <div className="mb-10 flex flex-col justify-between gap-4 border-b border-zinc-800 pb-8 sm:flex-row sm:items-end">
           <div>
-            <h1 className="text-4xl font-black tracking-tight">CA Audit <span className="text-red-500">Vault</span></h1>
+            <h1 className="text-4xl font-black tracking-tight">
+              I<span className="text-red-500">Hate</span>Audit
+            </h1>
             <p className="mt-2 text-zinc-400">Mastering Standards on Auditing & Professional Conduct.</p>
           </div>
           
-          {/* Admin Dashboard Entry link */}
-          <Link href="/admin/dashboard" className="text-xs font-semibold text-zinc-600 hover:text-zinc-400 self-start sm:self-auto">
-            Admin Access 🔐
-          </Link>
+          {/* Dynamic Auth Buttons */}
+          <div className="self-start sm:self-auto">
+            {user ? (
+              <button 
+                onClick={handleSignOut} 
+                className="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-zinc-800"
+              >
+                Sign Out
+              </button>
+            ) : (
+              <Link 
+                href="/login" 
+                className="rounded-lg bg-white px-4 py-2 text-xs font-bold text-black transition-colors hover:bg-zinc-200"
+              >
+                Sign In
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* MASTER COURSE PROGRESS WIDGET */}
@@ -95,7 +130,7 @@ export default function CurriculumPage() {
                 <div className="mb-6 flex flex-col justify-between gap-2 border-b border-zinc-800/60 pb-4 sm:flex-row sm:items-center">
                   <div>
                     <h3 className="text-xl font-bold tracking-tight text-white">{sectionName}</h3>
-                    <p className="text-xs font-medium text-zinc-500 mt-0.5">{sectionCompleted} / {sectionTotal} Lessons Finished</p>
+                    <p className="mt-0.5 text-xs font-medium text-zinc-500">{sectionCompleted} / {sectionTotal} Lessons Finished</p>
                   </div>
                   
                   {/* Micro Chapter Progress Bar */}
@@ -106,7 +141,7 @@ export default function CurriculumPage() {
                         style={{ width: `${sectionPercentage}%` }} 
                       />
                     </div>
-                    <span className="text-xs font-bold text-zinc-400 w-8 text-right">{sectionPercentage}%</span>
+                    <span className="w-8 text-right text-xs font-bold text-zinc-400">{sectionPercentage}%</span>
                   </div>
                 </div>
 
@@ -127,7 +162,7 @@ export default function CurriculumPage() {
                       >
                         <div className="flex items-center gap-4">
                           {/* Left Icon status indicator */}
-                          <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold border transition-colors ${
+                          <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-bold transition-colors ${
                             isDone 
                               ? "border-green-500 bg-green-500 text-black" 
                               : "border-zinc-700 bg-zinc-950 text-zinc-500 group-hover:border-zinc-500 group-hover:text-white"
