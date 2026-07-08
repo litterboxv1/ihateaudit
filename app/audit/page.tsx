@@ -12,19 +12,29 @@ export default function CurriculumPage() {
   const [user, setUser] = useState < any > (null);
   const router = useRouter();
   
-  useEffect(() => {
+    useEffect(() => {
     const fetchData = async () => {
       // 0. Check if user is logged in
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user || null);
       
       // 1. Grab all lectures from the database
-      const { data } = await supabase.from("topics").select("*").order("id", { ascending: true });
-      if (data) setTopics(data);
+      const { data: topicsData } = await supabase.from("topics").select("*").order("id", { ascending: true });
+      if (topicsData) setTopics(topicsData);
       
-      // 2. Grab completion states from localStorage
-      const savedProgress = JSON.parse(localStorage.getItem("ca_audit_progress") || "[]");
-      setCompletedIds(savedProgress);
+      // 2. Fetch authenticated cloud progress
+      if (session?.user) {
+        const { data: progressData } = await supabase
+          .from("user_progress")
+          .select("topic_id")
+          .eq("user_id", session.user.id);
+          
+        if (progressData) {
+          // Convert database integers back to strings for your state array
+          const cloudCompletedIds = progressData.map(log => log.topic_id.toString());
+          setCompletedIds(cloudCompletedIds);
+        }
+      }
       
       setIsLoading(false);
     };
@@ -37,7 +47,7 @@ export default function CurriculumPage() {
     
     return () => subscription.unsubscribe();
   }, []);
-  
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.push("/login");
